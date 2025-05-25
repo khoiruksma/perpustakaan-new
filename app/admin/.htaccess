@@ -13,8 +13,11 @@ RewriteRule ^profil-saya$ home.php?module=pages/views/v_profile_saya [L]
 RewriteRule ^identitas-app$ home.php?module=pages/views/v_identitas_app [L]
 RewriteRule ^laporan$ home.php?module=pages/views/v_laporan [L]
 RewriteRule ^pesan$ home.php?module=pages/views/v_pesan [L]
+
 #
+
 RewriteRule ^data-peminjaman$ home.php?module=pages/views/v_peminjaman [L]
+RewriteRule ^data-pengembalian$ home.php?module=pages/views/v_pengembalian [L]
 
 RewriteRule ^keluar$ logout.php [L]
 </IfModule>

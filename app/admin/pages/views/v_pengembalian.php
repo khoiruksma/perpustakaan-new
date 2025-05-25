@@ -1,11 +1,11 @@
 <div class="content-wrapper">
     <section class="content-header">
         <h1 style="font-family: 'Quicksand', sans-serif; font-weight: bold;">
-            Peminjaman Buku
+            Pengembalian Buku
         </h1>
         <ol class="breadcrumb">
             <li><a href="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li class="active">Peminjaman Buku</li>
+            <li class="active">Pengembalian Buku</li>
         </ol>
     </section>
 
@@ -14,13 +14,13 @@
             <div class="col-xs-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#form-peminjaman" data-toggle="tab">Formulir Peminjaman Buku</a></li>
-                        <li><a href="#riwayat-peminjaman" data-toggle="tab">Riwayat Peminjaman Buku</a></li>
+                        <li class="active"><a href="#form-pengembalian" data-toggle="tab">Formulir Pengembalian Buku</a></li>
+                        <li><a href="#riwayat-pengembalian" data-toggle="tab">Riwayat Pengembalian Buku</a></li>
                     </ul>
                     <div class="tab-content">
-                        <!-- Formulir Peminjaman Buku -->
-                        <div class="tab-pane active" id="form-peminjaman">
-                            <form action="pages/function/Peminjaman.php?aksi=pinjam" method="POST">
+                        <!-- Formulir Pengembalian Buku -->
+                        <div class="tab-pane active" id="form-pengembalian">
+                            <form action="pages/function/Peminjaman.php?aksi=pengembalian" method="POST">
                                 <!-- Pencarian Nama Anggota -->
                                 <div class="form-group">
                                     <label>Nama Anggota</label>
@@ -32,24 +32,24 @@
                                 <div class="form-group">
                                     <label>Judul Buku</label>
                                     <select class="form-control" name="judulBuku" id="judulBuku" required>
-                                        <option selected disabled> -- Pilih Buku yang akan dipinjam -- </option>
+                                        <option selected disabled> -- Pilih Buku yang akan dikembalikan -- </option>
                                     </select>
                                 </div>
 
-                                <!-- Tanggal Peminjaman -->
+                                <!-- Tanggal Pengembalian -->
                                 <div class="form-group">
-                                    <label>Tanggal Peminjaman</label>
-                                    <input type="text" class="form-control" name="tanggalPeminjaman" value="<?= date('d-m-Y'); ?>" readonly required>
+                                    <label>Tanggal Pengembalian</label>
+                                    <input type="text" class="form-control" name="tanggalPengembalian" value="<?= date('d-m-Y'); ?>" readonly required>
                                 </div>
 
-                                <!-- Kondisi Buku Saat Dipinjam -->
+                                <!-- Kondisi Buku Saat Dikembalikan -->
                                 <div class="form-group">
-                                    <label>Kondisi Buku Saat Dipinjam</label>
-                                    <select class="form-control" name="kondisiBukuSaatDipinjam" required>
+                                    <label>Kondisi Buku Saat Dikembalikan</label>
+                                    <select class="form-control" name="kondisiBukuSaatDikembalikan" required>
                                         <option selected disabled>-- Pilih Kondisi Buku --</option>
-                                        <option value="Baik">Baik</option>
-                                        <option value="Rusak">Rusak</option>
-                                        <option value="Hilang">Hilang</option>
+                                        <option value="Baik">Baik (Tidak ada denda)</option>
+                                        <option value="Rusak">Rusak (Denda 20.000)</option>
+                                        <option value="Hilang">Hilang (Denda 50.000)</option>
                                     </select>
                                 </div>
 
@@ -60,23 +60,20 @@
                             </form>
                         </div>
 
-                        <!-- Riwayat Peminjaman -->
-                        <div class="tab-pane" id="riwayat-peminjaman">
+                        <!-- Riwayat Pengembalian -->
+                        <div class="tab-pane" id="riwayat-pengembalian">
                             <table class="table table-bordered" id="example1">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Anggota</th>
                                         <th>Judul Buku</th>
-                                        <th>Tanggal Peminjaman</th>
                                         <th>Tanggal Pengembalian</th>
-                                        <th>Kondisi Buku Saat Dipinjam</th>
                                         <th>Kondisi Buku Saat Dikembalikan</th>
                                         <th>Denda</th>
                                     </tr>
                                 </thead>
                                 <?php
-                                include "../../config/koneksi.php";
                                 $no = 1;
                                 $query = mysqli_query($koneksi, "SELECT * FROM peminjaman");
                                 while ($row = mysqli_fetch_assoc($query)) {
@@ -86,9 +83,7 @@
                                             <td><?= $no++; ?></td>
                                             <td><?= $row['nama_anggota']; ?></td>
                                             <td><?= $row['judul_buku']; ?></td>
-                                            <td><?= $row['tanggal_peminjaman']; ?></td>
                                             <td><?= $row['tanggal_pengembalian']; ?></td>
-                                            <td><?= $row['kondisi_buku_saat_dipinjam']; ?></td>
                                             <td><?= $row['kondisi_buku_saat_dikembalikan']; ?></td>
                                             <td><?= $row['denda']; ?></td>
                                         </tr>
@@ -132,14 +127,14 @@
         $(document).on('click', '.suggestion', function() {
             let selectedAnggota = $(this).text();
             $('#searchAnggota').val(selectedAnggota);
-            // Setelah memilih anggota, tampilkan buku yang bisa dipinjam oleh anggota tersebut
-            fetchBukuAvailable(selectedAnggota);
+            // Setelah memilih anggota, tampilkan buku yang dipinjam oleh anggota tersebut
+            fetchBukuDipinjam(selectedAnggota);
         });
 
-        // Fungsi untuk mengambil judul buku yang tersedia untuk dipinjam oleh anggota yang dipilih
-        function fetchBukuAvailable(namaAnggota) {
+        // Fungsi untuk mengambil judul buku yang dipinjam oleh anggota yang dipilih
+        function fetchBukuDipinjam(namaAnggota) {
             $.ajax({
-                url: "pages/function/getBukuAvailable.php", // File untuk mendapatkan buku yang tersedia untuk dipinjam oleh anggota
+                url: "admin/pages/function/getBukuDipinjam.php", // File untuk mendapatkan buku yang dipinjam oleh anggota
                 method: "GET",
                 data: { namaAnggota: namaAnggota },
                 success: function(data) {
